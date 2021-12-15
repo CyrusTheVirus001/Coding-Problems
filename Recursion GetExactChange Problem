@@ -1,0 +1,13 @@
+def canGetExactChange(targetMoney, denominations):
+  # Write your code here
+  
+  if targetMoney == 0:
+    return True
+  if targetMoney < 0:
+    return False
+  
+  for denomination in denominations:
+    if (canGetExactChange(targetMoney-denomination,denominations)==True):
+      return True
+
+  return False
