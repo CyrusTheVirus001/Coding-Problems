@@ -1,0 +1,42 @@
+def rotationalCipher(input, rotation_factor):
+  
+  if rotation_factor > 26:
+    rf = rotation_factor%26
+  else:
+    rf = rotation_factor
+  if rotation_factor > 10:
+    rf1 = rotation_factor%10
+  else:
+    rf1 = rotation_factor
+    
+  encrypted = []
+  
+  for symbol in input:
+    sym = ord(symbol)
+    
+    #if letter is lowercase
+    if (sym>=97)&(sym<=122):
+      temp_value = sym+rf
+      if temp_value > 122:
+        temp_value=96+(temp_value%122)
+      encrypted.append(chr(temp_value))
+      
+    #if letter is uppercase    
+    elif (sym>=65)&(sym<=90):
+      temp_value = sym+rf
+      if temp_value > 90:
+        temp_value=64+(temp_value%90)
+      encrypted.append(chr(temp_value))
+      
+    #if a number    
+    elif (sym>=48)&(sym<=57):
+      temp_value = sym+rf1
+      if temp_value > 57:
+        temp_value=47+(temp_value%57)
+      encrypted.append(chr(temp_value))
+      
+    #if anything else
+    else:
+      encrypted.append(symbol)
+  
+  return encrypted
