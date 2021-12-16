@@ -1,0 +1,16 @@
+def findEncryptedWord(s):
+
+  length = len(s)
+  if length == 0:
+    return ""
+  if length == 1:
+    return s[0]
+  
+  mid = math.ceil(length/2)-1
+  left_str = s[:mid]
+  right_str = s[mid+1:]
+  
+  left = findEncryptedWord(left_str)
+  right =  findEncryptedWord(right_str)
+  
+  return s[mid]+left+right
