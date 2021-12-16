@@ -1,0 +1,12 @@
+import math
+import itertools
+
+def numberOfWays(arr, k):
+
+  output=0  
+  comb = list(itertools.combinations(arr, 2))
+  for pair in comb:
+    if (pair[0]+pair[1])==k:
+      output+=1
+
+  return output
