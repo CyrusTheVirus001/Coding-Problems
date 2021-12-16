@@ -1,0 +1,28 @@
+import math
+
+
+def count_subarrays(arr):
+  
+  length = len(arr)
+  output = []
+  
+  for i,char in enumerate(arr):
+    sub_arr = 0
+    
+    pos = i-1
+    while pos>=0:
+      if char > arr[pos]:
+        sub_arr+=1
+      else: break
+      pos=pos-1
+        
+    pos = i+1
+    while pos <= length-1:
+      if char > arr[pos]:
+        sub_arr+=1
+      else: break
+      pos=pos+1
+    
+    output.append(sub_arr+1)
+        
+  return output
