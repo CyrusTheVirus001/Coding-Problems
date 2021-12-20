@@ -1,0 +1,19 @@
+def isBalanced(s):
+  stack = []
+  for bracket in s:
+    if (bracket == '{'):
+      stack.append(1)
+    elif (bracket == '['):
+      stack.append(2)
+    elif (bracket == '('):
+      stack.append(3)
+    elif (bracket == '}')&(stack[-1]==1):
+      stack.pop()
+    elif (bracket == ']')&(stack[-1]==2):
+      stack.pop()
+    elif (bracket == ')')&(stack[-1]==3):
+      stack.pop()
+  if len(stack)>0:
+    return False
+  
+  return True
