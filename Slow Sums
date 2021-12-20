@@ -1,0 +1,14 @@
+def getTotalTime(arr):
+
+  current_max = max(arr)
+  total_penalty = 0
+  arr.remove(current_max)
+  
+  while len(arr)>0:
+    max1 = max(arr)
+    arr.remove(max1)
+    current_max += max1
+    total_penalty+=current_max
+    
+
+  return total_penalty
