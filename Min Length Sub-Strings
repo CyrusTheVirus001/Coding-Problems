@@ -1,0 +1,12 @@
+def min_length_substring(s, t):
+  T = t
+  count = 0
+  start_count = False
+  for char in s:
+    if start_count==True: count+=1
+    if (char in T)==True:
+      start_count=True
+      T = T.replace(char,"",1)
+      if len(T)==0: return count+1
+   
+  return -1
