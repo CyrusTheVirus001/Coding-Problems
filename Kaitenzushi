@@ -1,0 +1,26 @@
+from typing import List
+# Write any import statements here
+
+def getMaximumEatenDishCount(N: int, D: List[int], K: int) -> int:
+  list_of_previous_dishes = []
+  dishes_eaten = 0
+  set_size = 0
+
+
+  for dish in D:
+    add_dish = True
+    for eaten_dishes in list_of_previous_dishes:
+      if dish == eaten_dishes:
+        add_dish = False
+        break
+      else: add_dish == True
+    
+    if add_dish == True:
+      dishes_eaten+=1
+      list_of_previous_dishes.append(dish)
+      set_size+=1
+      if set_size > K:
+        set_size = K
+        list_of_previous_dishes.pop(0)
+
+  return dishes_eaten
