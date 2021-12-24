@@ -1,0 +1,32 @@
+from typing import List
+# Write any import statements here
+
+def getMaxDamageDealt(N: int, H: List[int], D: List[int], B: int) -> float:
+  max_damage = -1
+  greatest_soldier_one = -1
+  greatest_soldier_two = -1
+  
+  for i in range(N):
+    for j in range(N):
+      
+      soldier_one_damage = D[i]*(H[i]/B)
+      
+      
+      if i!=j:soldier_two_damage = D[j]*(H[j]/B)
+      else: break
+        
+      
+      positional_damage_one = D[i]*(H[j]/B)
+      positional_damage_two = D[j]*(H[i]/B)
+      
+      if positional_damage_one > positional_damage_two:
+        current_damage = positional_damage_one + soldier_two_damage + soldier_one_damage
+
+      else:
+        current_damage = positional_damage_two + soldier_two_damage + soldier_one_damage
+      
+      if current_damage > max_damage:
+        max_damage = current_damage
+        
+      
+  return max_damage
