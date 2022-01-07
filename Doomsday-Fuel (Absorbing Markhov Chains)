@@ -1,0 +1,64 @@
+#normalize the matrix between 0-1
+#find absorbing states and mark identity
+#return a matrix of probabilities and a list of all absorbing state locations
+def normalize(mat):
+  absorbing_states = []
+  for r in range(len(mat[0])):
+    sum1 = sum(mat[r])
+    if sum1 <= 0:
+      absorbing_states.append(r)
+      mat[r][r] = 1
+    else:
+      for i in range(len(mat[r])):
+        mat[r][i] = float(mat[r][i])/sum1
+  return np.array(mat),absorbing_states
+
+#power iteration can be used to solve for probabilities!
+#famously used in GOOGLES pagerank algorithm!!
+#efficient and linear
+#returns probabilities
+def power_iteration(mat):
+  L = mat.T
+  R = mat[0]
+  for i in range(1000):
+      R = np.matmul(L,R)
+  return R.T
+
+#least common multiple function
+def lcm(a, b):
+    if a > b: g = a
+    else:g = b
+    while(True):
+        if((g % a == 0) & (g % b == 0)):
+            lcm = g
+            break
+        g += 1
+    return lcm
+
+#convert probabilities into fractions
+#return a list to satisfy requirements
+def manage_return(R,absorbing_states):
+  fraction_list = []
+  return_list = []
+  LCM = 1
+
+  for i in absorbing_states:
+    fraction = Fraction(R[i]).limit_denominator(100)
+    fraction_list.append(fraction)
+    if fraction != 0:
+      LCM = lcm(LCM,fraction.denominator)
+
+  for i in range(len(fraction_list)):
+    mult = 1
+    if fraction_list[i] != 0:
+      mult = LCM/fraction_list[i].denominator
+    return_list.append(int(fraction_list[i].numerator*mult))
+  
+  return_list.append(LCM)
+  return return_list
+
+#MAIN
+def solution(m):
+  L,absorbing_states = normalize(m)
+  R = power_iteration(L)
+  return manage_return(R,absorbing_states)
