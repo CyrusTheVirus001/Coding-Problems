@@ -1,0 +1,123 @@
+import math
+#node class to generate graph
+class node:
+  def __init__(self, parent, children,position,shortcut_used,costg,costh):
+    self.name = str(position[0])+'-'+str(position[1])+'-'+str(shortcut_used)#unique identifier for dictionairy
+    self.parent = parent
+    self.children = children
+    self.position = position
+    self.shortcut_used = shortcut_used
+    self.costg = costg
+    self.costh = costh
+
+#manhatten distance + euclidean distance used as hueristic 
+def manhatten(pos,mat):
+  y1 = len(mat)
+  x1 = len(mat[0])
+  linear_distance = math.sqrt((y1 - pos[0])**2 + (x1 - pos[1])**2)
+  manhatten_distance = (y1 - pos[0]) + (x1 - pos[1])
+  return linear_distance+manhatten_distance
+
+#function to calculate node cost, nodes traversed + heuristic
+def get_function(NODE):
+  return NODE.costg+NODE.costh
+
+#RETURN A LIST OF POSSIBLE MOVES FROM THE CURRENT NODE
+def generate_moves(n,mat):
+
+  current_node = n
+  x = n.position[1]
+  y = n.position[0]
+  moves = []
+
+  #CAN MOVE RIGHT
+  if (x+1) < len(mat[y]):
+    if mat[y][x+1] == 0:
+      #create child node and add to moves
+      new_node = node(current_node,None,[y,x+1],current_node.shortcut_used,current_node.costg+1,manhatten([y,x+1],mat))
+      moves.append(new_node)
+    if (mat[y][x+1] == 1)&(current_node.shortcut_used == False):
+      #create child node w/ shortcut used
+      new_node = node(current_node,None,[y,x+1],True,current_node.costg+1,manhatten([y,x+1],mat))
+      moves.append(new_node)
+
+  #CAN MOVE LEFT
+  if (x-1)>=0:
+    if mat[y][x-1] == 0:
+      new_node = node(current_node,None,[y,x-1],current_node.shortcut_used,current_node.costg+1,manhatten([y,x-1],mat))
+      moves.append(new_node)
+    if (mat[y][x-1] == 1)&(current_node.shortcut_used == False):
+      new_node = node(current_node,None,[y,x-1],True,current_node.costg+1,manhatten([y,x-1],mat))
+      moves.append(new_node)
+
+  #CAN MOVE UP
+  if (y-1)>=0:
+    if mat[y-1][x] == 0:
+      new_node = node(current_node,None,[y-1,x],current_node.shortcut_used,current_node.costg+1,manhatten([y-1,x],mat))
+      moves.append(new_node)
+    if (mat[y-1][x] == 1)&(current_node.shortcut_used == False):
+      new_node = node(current_node,None,[y-1,x],True,current_node.costg+1,manhatten([y-1,x],mat))
+      moves.append(new_node)
+
+  #CAN MOVE DOWN
+  if (y+1) < len(mat):
+    if mat[y+1][x] == 0:
+      new_node = node(current_node,None,[y+1,x],current_node.shortcut_used,current_node.costg+1,manhatten([y+1,x],mat))
+      moves.append(new_node)
+    if (mat[y+1][x]==1)&(current_node.shortcut_used == False):
+      new_node = node(current_node,None,[y+1,x],True,current_node.costg+1,manhatten([y+1,x],mat))
+      moves.append(new_node)
+
+
+  return moves
+
+#A* graph search Algorithm for finding the shortest path
+def solution(mat):
+
+  start_node = node(None,None,[0,0],False,1,manhatten([0,0],mat))
+  open_list = []
+  closed_list = []
+
+  open_list.append(start_node)
+
+  while len(open_list) > 0:
+    #sort list by A* defined heuristic g + h
+    open_list.sort(key=get_function)
+
+    #current node is first in open list sorted from least to greatest
+    current_node = open_list.pop(0)
+
+    #add current node to list of visited nodes
+    closed_list.append(current_node.name)
+
+    #If Destination reached, return the current node cost g, i.e. nodes traversed
+    if (current_node.position[0] == len(mat)-1)&(current_node.position[1]==len(mat[len(mat)-1])-1):
+      return current_node.costg 
+
+    #generate all children nodes from current node
+    #if a child node is a new node (not previously visited) add it to our open list of nodes to explore
+    for move in generate_moves(current_node,mat):
+      if move.name not in closed_list:
+        open_list.append(move)
+        
+#EXTRA TEST CASES
+m =  [[0, 1, 1, 0], [0, 0, 0, 1], [1, 1, 0, 0], [1, 1, 1, 0]]#7
+m1 = [[0, 0, 0, 0, 0, 0], [1, 1, 1, 1, 1, 0], [0, 0, 0, 0, 0, 0], [0, 1, 1, 1, 1, 1], [0, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0]]#11
+m3 = [[0, 0],[0, 0]]#3
+m4 = [[0, 0],[0, 1]]#3
+m5 = [[0, 1, 0, 0, 0], [0, 1, 0, 1, 0], [0, 0, 0, 1, 0], [0, 1, 1, 1, 1], [0, 1, 1, 1, 0]]#13
+m6 = [[0, 1, 0, 0, 0], [0, 1, 0, 1, 0], [0, 0, 0, 1, 0], [0, 0, 1, 1, 1], [0, 1, 1, 0, 0],[0, 1, 1, 0, 0]]#14
+m7 = [[0, 1, 0, 0], [0, 0, 0, 0], [0, 0, 1, 1], [0, 1, 1, 0],[0, 1, 1, 0]]#8
+m8 = [[0, 1, 0, 0, 0], [0, 0, 0, 1, 0], [0, 0, 1, 1, 0], [0, 1, 1, 0, 0],[0, 1, 1, 0, 0]]#9
+m9 = [[0, 1, 0, 0, 0], [0, 0, 0, 1, 0], [0, 0, 1, 1, 1], [0, 1, 1, 0, 0],[0, 1, 1, 0, 0]]#11
+m10 = [[0,0,0,0,0,0],[1,1,1,1,1,0],[1,1,1,1,1,0],[1,0,0,0,0,1],[0,0,1,1,1,1],[0,0,0,0,0,0]]#19
+m11 = [[0,0,0,0],[1,1,1,0],[1,0,0,0],[0,0,1,1],[0,1,0,0],[0,0,0,0]]#9
+m12 = [[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0]]#16
+
+m13 = [[0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0],[0,1,0,1,1,0,1,0,1,0,0,0,1,0,0,0],[0,1,0,0,1,1,1,0,0,1,0,1,0,1,0,1],[0,1,0,0,0,0,1,1,0,0,1,0,0,0,1,0],[1,1,1,1,0,1,1,0,0,1,0,0,0,1,0,0],[0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0],[0,1,1,1,1,1,1,1,0,0,0,1,0,0,0,0],[0,0,0,0,0,0,1,0,0,0,1,1,1,1,1,0],[0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],[0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1],[0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0],[0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0],[0,1,0,0,1,1,0,0,1,1,1,1,1,0,1,1],[0,0,0,1,0,1,0,0,1,0,0,0,0,0,0,0],[0,0,1,0,0,0,0,0,1,0,1,0,1,1,1,1],[0,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],[1,0,1,0,0,0,1,0,0,0,1,0,1,1,0,1],
+[0,0,0,1,0,0,1,0,0,0,1,0,1,0,0,0],[0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0]]#47
+
+m14 = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]#29
