@@ -1,0 +1,92 @@
+import math
+
+#reflects a list of points into a different specified quadrant
+def c_quad(l,q_vector):
+  quad_list = []
+  for pos in l:
+    new_pos = [pos[0]*q_vector[0],pos[1]*q_vector[1],pos[2]]
+    quad_list.append(new_pos)
+  return quad_list
+
+def mirror_positions(player_pos,enemy_pos,area,d):
+
+  player_positions = []
+  enemy_positions = []
+
+  total_x = player_pos[0]+d
+  total_y = player_pos[1]+d
+
+  #Initialize starting variables
+  shift_x, shift_y   = area[0]*2, area[1]*2
+  offset_x, offset_y = 0, 0
+  px,py,ex,ey = player_pos[0], player_pos[1], enemy_pos[0], enemy_pos[1] #Starting player positions, starting enemy positions
+  c1x,c2x,c3x,c4x,c1y,c2y,c3y,c4y = 0,0,area[0],area[0],0,area[1],0,area[1] #corner points
+
+  #generate all points for player and enemy in QUADRANT I
+  while (offset_y<=total_y+shift_y):
+    while (offset_x<=total_x+shift_x):
+
+      P_point,E_point = [px+offset_x, py+offset_y, 'p'],[ex+offset_x, ey+offset_y, 'e']
+      c1_point,c2_point,c3_point,c4_point = [c1x+offset_x,c1y+offset_y,'p'],[c2x+offset_x,c2y+offset_y,'p'],[c3x+offset_x,c3y+offset_y,'p'],[c4x+offset_x,c4y+offset_y,'p']
+
+      player_positions.extend((P_point,c1_point,c2_point,c3_point,c4_point))
+      enemy_positions.append(E_point)
+
+      px,ex = (px*-1),(ex*-1)
+
+      if px<0:offset_x = offset_x+shift_x
+    
+    offset_x = 0
+    px,ex = player_pos[0],enemy_pos[0]
+    py,ey = (py*-1),(ey*-1)
+
+    if py<0:offset_y = offset_y+shift_y
+
+  #return a list of all reflected player points, return a list of all reflected enemey points
+  return player_positions+c_quad(player_positions,[-1,1])+c_quad(player_positions,[-1,-1])+c_quad(player_positions,[1,-1]), enemy_positions+c_quad(enemy_positions,[-1,1])+c_quad(enemy_positions,[-1,-1])+c_quad(enemy_positions,[1,-1])
+
+def solution(area,player,enemy,d):
+
+  possibilities = 0
+  saved_states = {}
+  p1 = [player[0],player[1],'p']
+  player_positions,enemy_positions = mirror_positions(player,enemy,area,d)#get all mirrored positions
+
+  #check all player points, find unique angles in regards to starting player position
+  #store unique angles in dictionairy
+  #keep angles less than other angles and less than laser distance
+  for pos in player_positions:
+
+    if pos != p1:
+
+      vector = pos[0]-player[0],pos[1]-player[1]
+      dist = math.hypot(vector[0],vector[1])
+      key = math.atan2(vector[1],vector[0])
+      if dist <= d:
+        if (key in saved_states):
+          if(dist < saved_states[key][0]):
+            saved_states[key] = [dist,pos[2]]
+
+        else:
+          saved_states[key] = [dist,pos[2]]
+
+  #check all enemy positions, check for angle conflicts in dictionairy, otherwise add unique solution
+  for pos in enemy_positions:
+
+    if pos != p1:
+
+      vector = pos[0]-player[0],pos[1]-player[1]
+      dist = math.hypot(vector[0],vector[1])
+      key = math.atan2(vector[1],vector[0])
+
+      if dist <= d:
+        if key in saved_states:
+          if (dist <= saved_states[key][0]):
+            saved_states[key] = [dist,pos[2]]
+            possibilities+=1
+
+        else:
+          saved_states[key] = [dist,pos[2]]
+          possibilities+=1
+
+  return possibilities
