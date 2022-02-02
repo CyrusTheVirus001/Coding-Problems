@@ -1,6 +1,7 @@
 import math
 import itertools
 
+#Non-Linear
 def numberOfWays(arr, k):
 
   output=0  
@@ -10,3 +11,18 @@ def numberOfWays(arr, k):
       output+=1
 
   return output
+
+#Linear-Time
+def numberOfWays(arr, k):
+  d = {}
+  sums = 0
+  
+  for ele in arr:
+    if (k-ele) in d:
+      sums+=d[k-ele]
+    if ele not in d:
+      d[ele] = 1
+    else:
+      d[ele]+=1
+      
+  return sums
