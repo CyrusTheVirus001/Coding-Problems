@@ -1,0 +1,69 @@
+import copy
+
+def update_residual(max_flow,current_path,current_node,residual_graph):
+  current_path.append(current_node)
+  min_flow = 99999999999
+
+  for n,k in enumerate(current_path):
+    if n+1 < len(current_path):
+      temp_min = residual_graph[k][current_path[n+1]]
+      if temp_min < min_flow:
+        min_flow = temp_min
+
+  max_flow+=min_flow
+
+  for n,k in enumerate(current_path):
+    if n+2 < len(current_path):
+      value = current_path[n+1]
+      residual_graph[k][value] -= min_flow
+      residual_graph[value][k] += min_flow
+
+  last_node_check = current_path[-2]
+  last_node_check1 = current_path[-1]
+  nodes_to_visit = False
+  residual_graph[last_node_check][last_node_check1] -= min_flow
+  return max_flow,current_path,residual_graph
+
+def solution(entrances,exits,path):
+
+  temporary_path = copy.deepcopy(path)
+  maxFlow, prev_maxFlow = 0, None
+  solution_found = False
+
+  while(solution_found == False):
+    prev_maxFlow = maxFlow
+    for node in entrances:
+      visited_nodes = []
+      tracker = []
+      current_node = node
+
+      nodes_to_visit = True;
+      while(nodes_to_visit == True):
+        
+        visited_nodes.append(current_node)
+
+        max_value = 0
+        node_index = -1
+
+        for i,n in enumerate(temporary_path[current_node]):
+          if n > max_value:
+            if i not in visited_nodes: max_value, node_index = n, i
+
+        if node_index > 0:
+          tracker.append(current_node)
+          current_node = node_index
+
+        if len(tracker) == 0:
+          nodes_to_visit = False
+        
+        if nodes_to_visit == True:
+          if node_index == -1:
+            current_node = tracker.pop()
+
+          if current_node in exits:
+            maxFlow,tracker,temporary_path = update_residual(maxFlow,tracker,current_node,temporary_path)
+            nodes_to_visit = False
+
+    if(maxFlow == prev_maxFlow):solution_found = True;
+
+  return maxFlow
