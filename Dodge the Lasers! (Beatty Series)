@@ -1,0 +1,28 @@
+import math
+from decimal import *
+
+def beatty(n,sqr_2,equ):
+
+  if n == 0: 
+    return 0
+
+  b1 = int(n*sqr_2)
+  b2 = int(Decimal(b1)/equ)
+
+  eval_a = b1*(b1+1)/2
+  eval_b = b2*(b2+1)
+  total_eval = eval_a - eval_b
+
+  return total_eval - beatty(b2,sqr_2,equ)
+
+def solution(s):
+
+  n = Decimal(s)
+
+  with localcontext() as ctx:
+    ctx.prec = 102
+    sqr_2 = Decimal(2).sqrt()
+    equ = Decimal(2)+Decimal(2).sqrt()
+    sol = int(beatty(n,sqr_2,equ))
+
+    return str(sol)
