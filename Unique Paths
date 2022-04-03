@@ -1,0 +1,24 @@
+#Top-Down Dynamic_Programming Approach
+
+def uniquePaths(m: int, n: int) -> int:
+    
+    def num_ways(m,n,dp):
+
+        if(m==1 or n==1):return 1
+
+        if(dp[m][n] == 0):
+            dp[m][n] = num_ways(m-1,n,dp)+num_ways(m,n-1,dp)
+
+        return dp[m][n]
+        
+    dp = [[0 for i in range(m+1)] for j in range(n+1)]
+    
+    return num_ways(m,n,dp)
+ 
+ #############################
+ #############################
+ #Mathematical Formula Approach
+ 
+ def combinations(H,W):
+  h,w = H-1,W-1 
+  return math.factorial(h+w)/(math.factorial(h)*math.factorial(w))
