@@ -1,0 +1,34 @@
+def add_linked_nums(head_A,head_B):
+
+  current_a,current_b = head_A,head_B
+  carry = 0;
+  head_node = ListNode(0,None)
+  current = head_node
+  prev = None
+  
+  while current_a != None:
+
+    sum = current_a.val + current_b.val+carry
+
+    if sum >= 10:
+      value = sum%10
+      carry = 1
+    else:
+      value = sum
+      carry = 0
+
+    current.val = value
+
+    if prev != None:
+      prev.next = current
+
+    prev = current
+    current = ListNode(0,None)
+
+    current_a,current_b = current_a.next,current_b.next
+
+  if carry == 1:
+    prev.next = current
+    current.val = 1
+
+  return head_node
