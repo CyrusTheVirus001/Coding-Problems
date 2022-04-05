@@ -1,0 +1,36 @@
+#Delete a Node From a Binary Search Tree
+
+#Helper Function
+def find_min(n,min):
+  if n == None: return min
+  min = find_min(n.left,min)
+  min = find_min(n.right,min)
+  if n.value < min: min = n.value
+  return min
+  
+def delete_bst(root,value):
+
+  if root == None: return root
+
+  elif(value < root.value):
+    root.left = delete_bst(root.left,value)
+  elif(value > root.value):
+    root.right = delete_bst(root.right,value)
+
+  else:
+    if(root.left == None and root.right == None):
+      root = None
+
+    elif(root.left == None):
+      root = root.right
+
+    elif(root.right == None):
+      root = root.left
+
+    else:
+      root.value = find_min(root.right,float('inf'))
+      root.right = delete_bst(root.right,root.value)
+
+    return root
+
+  return root
